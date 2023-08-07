@@ -1,0 +1,169 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<!-- DC Payment Icons CSS -->
+<link rel="stylesheet" type="text/css" href="http://cdn.dcodes.net/2/payment_icons/dc_payment_icons.css" />
+     <div class="row">
+		<div class="col-lg-6">
+			<div class="box-element"style = "background-color:hsl(192, 3%, 71%);" id="form-wrapper">
+				<form id="form">
+					{% csrf_token %}
+			
+					<div id="shipping-info">
+					
+						<p style="font-size:25px;">Shipping Information:</p>
+						<hr>
+						<div class="form-field">
+							<input class="form-control" type="text" name="address" placeholder="Address.." required>
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="city" placeholder="City.."required>
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="state" placeholder="State.."required>
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="zipcode" placeholder="Zip code.."required>
+						</div>
+					</div>
+					<hr>
+					<input id="form-button" class="btn btn-danger btn-block" type="submit" value="Continue">
+				</form>
+			</div>
+			<br>
+			<div class="box-element hidden" id="payment-info">
+				<button id="make-payment" class="btn btn-danger btn-block">Make payment with Razorpay</button>
+			</div>
+		</div>
+
+		<div class="col-lg-6">
+			<div class="box-element"style = "background-color:hsl(192, 3%, 71%);">
+				<a  class="btn btn-outline-danger" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
+				<hr>
+				<h3>Order Summary</h3>
+				<hr>
+				{% for item in items %}
+				<div class="cart-row">
+					<div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}"></div>
+					<div style="flex:2"><p>{{item.product.name}}</p></div>
+					<div style="flex:1"><p>₹{{item.product.price}}</p></div>
+					<div style="flex:1"><p>x{{item.quantity}}</p></div>
+				</div>
+				{% endfor %}
+				<h5>Items:   {{order.get_cart_items}}</h5>
+				<h5>Total:   ₹{{order.get_cart_total|floatformat:2}}</h5>
+			</div>
+		</div>
+	</div>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "Yourkey", // Enter the Key ID generated from the Dashboard
+    "amount": "{{order.paytot}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+	"name": "{{cust.name}}",
+    "description": "footwear purchase",
+    "image": "{% static 'images/logo.png' %}",
+    "theme": {
+        "color": "#3399cc"
+    },
+	"handler":function(response){
+	if (response.razorpay_payment_id == 'undefined' || response.razorpay_payment_id < 1) 
+	{ 
+		redirect_url = 'http://127.0.0.1:8000/checkout/'; 
+		alert("Payment Failed!")
+	} 
+	else 
+	{ 
+		redirect_url = 'http://127.0.0.1:8000/'; 
+		submitFormData()
+		alert("Your Payment is successful")
+		console.log("payid",response.razorpay_payment_id)
+		alert(response.razorpay_payment_id)
+	} 
+	location.href = redirect_url;
+	}
+	
+};
+var rzp1 = new Razorpay(options);
+document.getElementById('make-payment').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+	
+}
+</script>
+
+
+<script type="text/javascript">
+		var shipping = '{{order.shipping}}'
+		var total = '{{order.get_cart_total}}'
+	
+		if(shipping == 'False'){
+			document.getElementById('shipping-info').innerHTML = ''
+		}
+		if(shipping == 'False' && user != 'AnonymousUser'){
+			document.getElementById('form-wrapper').classList.add("hidden");
+			document.getElementById('payment-info').classList.remove("hidden");
+		}
+
+		var form = document.getElementById('form')
+
+		csrftoken = form.getElementsByTagName("input")[0].value
+		console.log('Newtoken:', form.getElementsByTagName("input")[0].value)
+
+
+		form.addEventListener('submit',function(e){
+			e.preventDefault()
+			console.log('Form Submitted')
+			document.getElementById('form-button').classList.add('hidden');
+			document.getElementById('payment-info').classList.remove('hidden');
+		})
+
+	/*	document.getElementById('make-payment').addEventListener('click', function(e){
+			
+		})*/
+
+		function submitFormData(){
+			console.log('Payment button clicked')
+
+			var userFormData = {
+				'total':total,
+			}
+
+			var shippingInfo = {
+				'address':null,
+				'city':null,
+				'state':null,
+				'zipcode':null,
+			}
+
+			if (shipping != 'False'){
+				shippingInfo.address = form.address.value
+				shippingInfo.city = form.city.value
+				shippingInfo.state = form.state.value
+				shippingInfo.zipcode = form.zipcode.value
+			}
+			
+		
+			console.log('Shipping Info:', shippingInfo)
+	    	console.log('User Info:', userFormData)
+
+			var url = '/process_order/'
+			fetch(url, {
+				method:'POST',
+				headers:{
+					'Content-Type':'application/json',
+					'X-CSRFToken':csrftoken,
+					},
+					body:JSON.stringify({'form':userFormData, 'shipping':shippingInfo}),
+			})
+			.then((response) => response.json())
+			.then((data) => {
+				cart = {}
+				document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+			})
+		}
+</script>
+{% endblock content %}

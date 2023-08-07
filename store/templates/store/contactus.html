@@ -1,0 +1,40 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<h1 style="text-align:center;">contact us</h1>
+<hr>
+<div class="container my-3">
+    <form action="/contactus/" method="post">{% csrf_token %}
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" class="form-control" id="name" name='name' placeholder="Enter Your Name"required>
+  </div>
+  <div class="form-group">
+    <label for="name">Email</label>
+    <input type="email" class="form-control" id="email" name='email' placeholder="Enter Your Email"required>
+  </div>
+
+    <div class="form-group">
+    <label for="name">Phone</label>
+    <input type="tel" class="form-control" id="phone" name='phone' placeholder="Enter Your Phone Number"required>
+  </div>
+
+
+   <div class="form-group">
+    <label for="desc">How May We Help You?</label>
+    <textarea class="form-control" id="desc" name='desc' rows="3"required></textarea>
+  </div>
+        <button type="submit" class="btn btn-danger">Submit</button>
+</form>
+
+
+</div>
+
+<script>
+{% if thank %}
+alert('Thanks for contacting us. We will get back to you soon!');
+
+document.location = "/store/contactus";
+{% endif %}
+</script>
+{% endblock content %}

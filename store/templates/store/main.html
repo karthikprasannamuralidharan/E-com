@@ -1,0 +1,266 @@
+{% load static %}
+<html>
+<head>
+	<title>Footwear Store</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+	<link rel="stylesheet" href="{% static 'css/foot.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+	<link rel="stylesheet" href="{% static 'css/shoe.css' %}">
+	
+	
+	<link rel="shortcut icon" href="#">
+
+	<script type="text/javascript">
+		var user = '{{request.user}}'
+		function getToken(name) {
+		let cookieValue = null;
+		if (document.cookie && document.cookie !== '') {
+			const cookies = document.cookie.split(';');
+			for (let i = 0; i < cookies.length; i++) {
+				const cookie = cookies[i].trim();
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+		var csrftoken = getToken('csrftoken');
+		console.log('CSRFTOKEN:', csrftoken)
+
+		function getCookie(name) {
+			//Split cookie string and get all individual name=values pairs in an array
+			var cookieArr = document.cookie.split(";");
+
+			// Loop through the array elements
+			for(var i=0; i < cookieArr.length; i++)
+			{
+				var cookiePair = cookieArr[i].split("=");
+				if(name == cookiePair[0].trim())
+				{
+					//Decode the cookie value and return
+					return decodeURIComponent(cookiePair[1]);
+				}
+			}
+			//return null if not found
+			return null;
+		}
+
+		var cart = JSON.parse(getCookie('cart'))
+		if(cart == undefined){
+			cart={}
+			console.log('Cart was created!')
+			document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+		}
+
+		console.log('Cart:',cart)
+	</script>
+
+</head>
+<body>
+ 
+	
+
+	<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: black;">
+	  <a class="navbar-brand" id="demoFont" href="{% url 'scart' %}">SHOES CART</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+
+
+	  
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" style="color: white;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Mens<span class="sr-only">(current)</span></a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="{% url 'mencasual' %}">Casual Shoes</a>
+          <a class="dropdown-item" href="{% url 'menformal' %}">Formal Shoes</a>
+          <a class="dropdown-item" href="{% url 'mensports' %}">Sports Shoes</a>
+          <a class="dropdown-item" href="{% url 'menchappal' %}">Fancy Chappals</a>
+        </div>
+      </li>
+	      </li>
+	    </ul>
+
+
+	 
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" style="color: white;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Womens<span class="sr-only">(current)</span></a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="{% url 'wcasual' %}">Casual Shoes</a>
+          <a class="dropdown-item" href="{% url 'wsports' %}">Sports Shoes</a>
+          <a class="dropdown-item" href="{% url 'wslippers' %}">Slippers</a>
+        </div>
+      </li>
+	      </li>
+	    </ul>
+	 
+
+
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" style="color: white;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Kids<span class="sr-only">(current)</span></a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="{% url 'kcasual' %}">Casual Shoes</a>
+          <a class="dropdown-item" href="{% url 'ksandal' %}">Sandals</a>
+        </div>
+      </li>
+	      </li>
+	    </ul>
+
+
+
+	{% if user.is_authenticated %}
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <a class="nav-link" href="{% url 'contactus' %}">ContactUs <span class="sr-only">(current)</span></a>
+	      </li>
+
+	    </ul>
+{% endif %}
+
+	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <a class="nav-link" href="{% url 'aboutus' %}">AboutUs <span class="sr-only">(current)</span></a>
+	      </li>
+	    </ul>
+
+
+
+{% if user.is_authenticated %}
+	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <a class="nav-link" href="{% url 'myorder' %}">MyOrders <span class="sr-only">(current)</span></a>
+	      </li>
+
+	    </ul>
+{% endif %}
+
+
+{% if user.is_authenticated %}
+ <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <a class="nav-link" href="{% url 'handelLogout' %}">Logout<span class="sr-only">(current)</span></a>
+	      </li>
+
+	    </ul>
+<div class="float-right">
+<ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+			<a class="nav-link" style="font-size:20px;">Welcome {{request.user}}<span class="sr-only">(current)</span></a>
+	      </li>
+	    </ul>
+	</div>
+{% else %}
+	   <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <a class="nav-link" href="{% url 'ulogin' %}">Login<span class="sr-only">(current)</span></a>
+	      </li>
+	    </ul>
+
+
+
+	   <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <a class="nav-link" href="{% url 'register' %}">Register<span class="sr-only">(current)</span></a>
+	      </li>
+
+	    </ul>
+{% endif %}
+
+<div class="float-right">
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	<form class="form-inline my-2 my-lg-0" method="get" action="{% url 'search' %}">
+      <input style="float:right;"class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="query" id="query">
+	  <button  style="float:right;" type="submit" class="btn btn-outline-danger">search</button>
+    </form>
+
+	 </li>
+
+	    </ul>
+</div>
+
+	    <div class="form-inline my-2 my-lg-0">
+		  <a href="{% url 'cart' %}">
+	    		<img  id="cart-icon" src="{% static 'images/shopping_cart_PNG42.png' %}">
+	    	</a>
+	    	<p id="cart-total">{{cartItems}}</p>
+
+	    </div>
+	  </div>
+	</nav>
+
+     <div class="container-fluid">
+	 {% for message in messages  %}            
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <strong>Message : </strong> {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+      {% endfor %}  
+            <br>
+            {% block content %}
+			{% csrf_token %}
+
+            {% endblock content %}
+         </div>
+		 <!-- Footer -->
+		 <br>
+		 <br>
+	<section id="footer" class="bg">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12">
+					<ul class="list-unstyled list-inline social text-center">
+						<li class="list-inline-item"><a href="#"><i class="fa fa-facebook"></i></a></li>
+						<li class="list-inline-item"><a href="#"><i class="fa fa-twitter"></i></a></li>
+						<li class="list-inline-item"><a href="#"><i class="fa fa-instagram"></i></a></li>
+						<li class="list-inline-item"><a href="#"><i class="fa fa-google-plus"></i></a></li>
+						<li class="list-inline-item"><a href="#" target="_blank"><i class="fa fa-envelope"></i></a></li>
+					</ul>
+				</div>
+				<hr>
+			</div>	
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 mt-2 mt-sm-2 text-center text-white">
+					<p>Shoes Cart</p>
+					<p class="h6">© All right Reversed.</p>
+				</div>
+				<hr>
+			</div>	
+		</div>
+	</section>
+	<!-- ./Footer -->
+
+<!------ Include the above in your HEAD tag ---------->
+
+
+
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+
+</body>
+</html>

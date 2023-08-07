@@ -1,0 +1,26 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<div class="row">
+<div class="col-sm-12">
+<h1>Formals Shoes</h1>
+<hr>
+</div>
+</div>
+	<div class="row">
+		{% for product in products %}
+		{% if product.pid == 3 %}
+		<div class="col-lg-3">
+			<img class="thumbnail" src="{{product.imageURL}}">
+			<div class="box-element product"style = "background-color:hsl(192, 3%, 71%);">
+				<h6><strong>{{product.name}}</strong></h6>
+				<hr>
+				<button data-product="{{product.id}}" {% if user.is_authenticated %} data-action="add" {% endif %}class="btn btn-outline-danger add-btn update-cart">Add to Cart</button>
+			
+				<h4 style="display: inline-block; float: right"><strong>₹{{product.price|floatformat:2}}</strong></h4>
+			</div>
+		</div>
+		{% endif %}
+		{% endfor %}
+	</div>
+{% endblock content  %}
