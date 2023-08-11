@@ -1,6 +1,7 @@
 **Online Footwear Store Website**
 
 Description: Developed a dynamic e-commerce website using Django framework to facilitate online footwear shopping. Integrated user authentication, payment processing via Razorpay, and search functionality.
+
 Technologies: Django, Python, JavaScript, Bootstrap, Razorpay Payment Gateway
 
 **Key Features:**
